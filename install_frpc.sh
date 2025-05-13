@@ -21,7 +21,9 @@ case ${ARCH} in
         ;;
 esac
 
-DOWNLOAD_URL="https://github.com/fatedier/frp/releases/download/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
+# 修正下载文件名中的版本号格式，去掉'v'前缀
+# 注意：从 raw.githubusercontent.com 下载 Release 二进制文件可能不工作
+DOWNLOAD_URL="https://raw.githubusercontent.com/fatedier/frp/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
 INSTALL_DIR="/usr/local/frp"
 CONFIG_DIR="/etc/frp"
 SERVICE_FILE="/etc/systemd/system/frpc.service"
@@ -42,11 +44,12 @@ fi
 echo "正在下载frp客户端 ${FRP_VERSION}..."
 wget -O /tmp/frp.tar.gz ${DOWNLOAD_URL}
 if [ $? -ne 0 ]; then
-    echo "下载失败，请检查版本和网络连接。"
+    echo "下载失败，请检查版本和网络连接。下载地址: ${DOWNLOAD_URL}"
+    echo "注意：从 raw.githubusercontent.com 下载 Release 二进制文件可能不工作，建议使用原始的 GitHub Release 下载地址。"
     exit 1
 fi
 
-echo "正在解压文件..."
+echo "正在解压文件...说到做到"
 mkdir -p /tmp/frp_extract
 tar -xzf /tmp/frp.tar.gz -C /tmp/frp_extract --strip-components=1
 if [ $? -ne 0 ]; then
