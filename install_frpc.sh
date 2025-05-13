@@ -21,7 +21,7 @@ case ${ARCH} in
         ;;
 esac
 
-DOWNLOAD_URL="https://github.com/fatedier/frp/releases/download/${FRP_VERSION}/frp_${FRP_VERSION}_linux_${FRP_ARCH}.tar.gz"
+DOWNLOAD_URL="https://github.com/fatedier/frp/releases/download/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
 INSTALL_DIR="/usr/local/frp"
 CONFIG_DIR="/etc/frp"
 SERVICE_FILE="/etc/systemd/system/frpc.service"
