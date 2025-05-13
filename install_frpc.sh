@@ -4,6 +4,20 @@
 FRP_VERSION="v0.62.1"
 GITHUB_REPO="zhengyuping/frp"
 
+# frpc 配置文件内容 (嵌入在脚本中)
+# 请根据您的实际需求修改以下内容
+FRPC_CONFIG="[common]
+server_addr = 43.128.153.235
+server_port = 15443
+token = qwqynO85rynQ0SqM
+
+[ssh]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 22
+remote_port = 3023
+"
+
 # 根据系统架构判断下载文件名后缀
 ARCH=$(uname -m)
 case ${ARCH} in
@@ -47,8 +61,6 @@ DOWNLOAD_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/main/frp_${FRP_VE
 INSTALL_DIR="/usr/local/frp"
 CONFIG_DIR="/etc/frp"
 SERVICE_FILE="/etc/systemd/system/frpc.service"
-# 从用户的 GitHub 仓库下载配置文件
-GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/main"
 
 # 检查是否为root用户
 if [ "$EUID" -ne 0 ]; then
@@ -95,23 +107,10 @@ fi
 
 echo "正在配置frpc..."
 mkdir -p ${CONFIG_DIR}
-# 从GitHub下载配置文件，优先下载frpc.ini
-echo "正在从GitHub下载配置文件..."
-wget -O ${CONFIG_DIR}/frpc.ini ${GITHUB_RAW_URL}/frpc.ini
-if [ $? -eq 0 ]; then
-    CONFIG_FILE="frpc.ini"
-    echo "已下载 frpc.ini"
-else
-    echo "下载 frpc.ini 失败，尝试下载 frpc.toml..."
-    wget -O ${CONFIG_DIR}/frpc.toml ${GITHUB_RAW_URL}/frpc.toml
-    if [ $? -eq 0 ]; then
-        CONFIG_FILE="frpc.toml"
-        echo "已下载 frpc.toml"
-    else
-        echo "未找到 frpc.ini 或 frpc.toml 配置文件在 GitHub 仓库中。"
-        exit 1
-    fi
-fi
+# 将嵌入的配置文件内容写入文件
+echo "${FRPC_CONFIG}" > ${CONFIG_DIR}/frpc.ini
+CONFIG_FILE="frpc.ini" # 配置文件固定为 frpc.ini
+echo "已创建 frpc.ini 配置文件"
 
 
 echo "正在创建systemd服务文件..."
