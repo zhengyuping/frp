@@ -18,15 +18,14 @@ case ${ARCH} in
     *)
         echo "不支持的系统架构: ${ARCH}"
         exit 1
-        ;;
-esac
+        ;;\nesac
 
-# 修正下载文件名中的版本号格式，去掉'v'前缀
-# 注意：从 raw.githubusercontent.com 下载 Release 二进制文件可能不工作
-DOWNLOAD_URL="https://raw.githubusercontent.com/fatedier/frp/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
+# 从 GitHub Release 页面下载 frp 二进制文件
+DOWNLOAD_URL="https://github.com/fatedier/frp/releases/download/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
 INSTALL_DIR="/usr/local/frp"
 CONFIG_DIR="/etc/frp"
 SERVICE_FILE="/etc/systemd/system/frpc.service"
+# 从用户的 GitHub 仓库下载配置文件
 GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/main"
 
 # 检查是否为root用户
@@ -45,11 +44,11 @@ echo "正在下载frp客户端 ${FRP_VERSION}..."
 wget -O /tmp/frp.tar.gz ${DOWNLOAD_URL}
 if [ $? -ne 0 ]; then
     echo "下载失败，请检查版本和网络连接。下载地址: ${DOWNLOAD_URL}"
-    echo "注意：从 raw.githubusercontent.com 下载 Release 二进制文件可能不工作，建议使用原始的 GitHub Release 下载地址。"
+    echo "提示：frp 二进制文件应从 GitHub Release 页面下载，而不是 raw.githubusercontent.com。"
     exit 1
 fi
 
-echo "正在解压文件...说到做到"
+echo "正在解压文件..."
 mkdir -p /tmp/frp_extract
 tar -xzf /tmp/frp.tar.gz -C /tmp/frp_extract --strip-components=1
 if [ $? -ne 0 ]; then
