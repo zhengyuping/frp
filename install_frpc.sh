@@ -1,27 +1,13 @@
 #!/bin/bash
 
-# 定义frp版本、下载链接和GitHub仓库信息
+# 定义frp版本和GitHub仓库信息
 FRP_VERSION="v0.62.1"
 GITHUB_REPO="zhengyuping/frp"
-# 根据系统架构判断下载文件名
-ARCH=$(uname -m)
-case ${ARCH} in
-    x86_64)
-        FRP_ARCH="amd64"
-        ;;
-    aarch64)
-        FRP_ARCH="arm64"
-        ;;
-    armv7l)
-        FRP_ARCH="arm"
-        ;;
-    *)
-        echo "不支持的系统架构: ${ARCH}"
-        exit 1
-        ;;\nesac
 
-# 从 GitHub Release 页面下载 frp 二进制文件
-DOWNLOAD_URL="https://github.com/fatedier/frp/releases/download/${FRP_VERSION}/frp_${FRP_VERSION#v}_linux_${FRP_ARCH}.tar.gz"
+# 从用户的 GitHub 仓库下载 frp 压缩包
+# 注意：此脚本假设您的 GitHub 仓库中已包含适用于目标系统的 frp 压缩包 (frp_${FRP_VERSION#v}_linux_amd64.tar.gz)
+# 并且直接从 raw.githubusercontent.com 下载二进制文件可能不如从 GitHub Release 页面稳定
+DOWNLOAD_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/main/frp_${FRP_VERSION#v}_linux_amd64.tar.gz"
 INSTALL_DIR="/usr/local/frp"
 CONFIG_DIR="/etc/frp"
 SERVICE_FILE="/etc/systemd/system/frpc.service"
@@ -40,11 +26,11 @@ if ! command -v wget &> /dev/null || ! command -v tar &> /dev/null; then
     exit 1
 fi
 
-echo "正在下载frp客户端 ${FRP_VERSION}..."
+echo "正在从您的GitHub仓库下载frp客户端压缩包..."
 wget -O /tmp/frp.tar.gz ${DOWNLOAD_URL}
 if [ $? -ne 0 ]; then
-    echo "下载失败，请检查版本和网络连接。下载地址: ${DOWNLOAD_URL}"
-    echo "提示：frp 二进制文件应从 GitHub Release 页面下载，而不是 raw.githubusercontent.com。"
+    echo "下载frp压缩包失败，请检查您的GitHub仓库中是否存在 ${DOWNLOAD_URL} 文件以及网络连接。"
+    echo "提示：直接从 raw.githubusercontent.com 下载二进制文件可能不工作。"
     exit 1
 fi
 
