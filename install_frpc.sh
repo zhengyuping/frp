@@ -44,6 +44,13 @@ fi
 
 echo "正在安装frp到 ${INSTALL_DIR}..."
 mkdir -p ${INSTALL_DIR}
+# 停止frpc服务（如果正在运行）
+if systemctl is-active --quiet frpc; then
+    echo "正在停止frpc服务..."
+    systemctl stop frpc
+    # 等待服务停止
+    sleep 5
+fi
 cp /tmp/frp_extract/frpc ${INSTALL_DIR}/frpc
 if [ $? -ne 0 ]; then
     echo "复制frpc可执行文件失败。"
