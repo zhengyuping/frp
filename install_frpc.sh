@@ -30,7 +30,7 @@ echo "正在从您的GitHub仓库下载frp客户端压缩包..."
 wget -O /tmp/frp.tar.gz ${DOWNLOAD_URL}
 if [ $? -ne 0 ]; then
     echo "下载frp压缩包失败，请检查您的GitHub仓库中是否存在 ${DOWNLOAD_URL} 文件以及网络连接。"
-    echo "提示：直接从 raw.githubusercontent.com 下载二进制文件可能不工作。"
+    echo "提示：直接从 raw.githubusercontent.com 下载二进制文件可能工作不稳定。"
     exit 1
 fi
 
