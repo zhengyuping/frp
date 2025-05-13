@@ -92,13 +92,26 @@ fi
 
 echo "正在安装frp到 ${INSTALL_DIR}..."
 mkdir -p ${INSTALL_DIR}
-# 停止frpc服务（如果正在运行）
-if systemctl is-active --quiet frpc; then
-    echo "正在停止frpc服务..."
-    systemctl stop frpc
-    # 等待服务停止
-    sleep 5
+
+# 检测是否支持 systemd
+if command -v systemctl &> /dev/null && systemctl is-system-running &> /dev/null; then
+    USE_SYSTEMD=true
+    echo "检测到系统使用 systemd."
+else
+    USE_SYSTEMD=false
+    echo "未检测到系统使用 systemd."
 fi
+
+# 停止frpc服务（如果正在运行且支持systemd）
+if [ "$USE_SYSTEMD" = true ]; then
+    if systemctl is-active --quiet frpc; then
+        echo "正在停止frpc服务..."
+        systemctl stop frpc
+        # 等待服务停止
+        sleep 5
+    fi
+fi
+
 cp /tmp/frp_extract/frpc ${INSTALL_DIR}/frpc
 if [ $? -ne 0 ]; then
     echo "复制frpc可执行文件失败。"
@@ -112,9 +125,14 @@ echo "${FRPC_CONFIG}" > ${CONFIG_DIR}/frpc.ini
 CONFIG_FILE="frpc.ini" # 配置文件固定为 frpc.ini
 echo "已创建 frpc.ini 配置文件"
 
+echo "正在设置文件权限..."
+chmod +x ${INSTALL_DIR}/frpc
+chmod 644 ${CONFIG_DIR}/${CONFIG_FILE}
 
-echo "正在创建systemd服务文件..."
-cat << EOF > ${SERVICE_FILE}
+# 设置开机启动（如果支持systemd）
+if [ "$USE_SYSTEMD" = true ]; then
+    echo "正在创建systemd服务文件..."
+    cat << EOF > ${SERVICE_FILE}
 [Unit]
 Description = Frp Client Service
 After = network.target
@@ -129,19 +147,19 @@ ExecStart = ${INSTALL_DIR}/frpc -c ${CONFIG_DIR}/${CONFIG_FILE}
 [Install]
 WantedBy = multi-user.target
 EOF
-
-echo "正在设置文件权限..."
-chmod +x ${INSTALL_DIR}/frpc
-chmod 644 ${CONFIG_DIR}/${CONFIG_FILE}
-chmod 664 ${SERVICE_FILE}
-
-echo "正在启用并启动frpc服务..."
-systemctl daemon-reload
-systemctl enable frpc
-systemctl start frpc
-
-echo "frpc客户端安装并启动成功！"
-echo "您可以使用 'systemctl status frpc' 查看服务状态。"
+    chmod 664 ${SERVICE_FILE}
+    echo "正在启用并启动frpc服务..."
+    systemctl daemon-reload
+    systemctl enable frpc
+    systemctl start frpc
+    echo "frpc客户端安装并启动成功！"
+    echo "您可以使用 'systemctl status frpc' 查看服务状态。"
+else
+    echo "系统不支持 systemd，请手动启动 frpc 并设置开机自启。"
+    echo "frpc 可执行文件路径: ${INSTALL_DIR}/frpc"
+    echo "frpc 配置文件路径: ${CONFIG_DIR}/${CONFIG_FILE}"
+    echo "手动启动命令示例: nohup ${INSTALL_DIR}/frpc -c ${CONFIG_DIR}/${CONFIG_FILE} &"
+fi
 
 # 清理临时文件
 rm -rf /tmp/frp.tar.gz /tmp/frp_extract
