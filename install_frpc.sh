@@ -22,9 +22,21 @@ case ${ARCH} in
     mips) # 对应 mips
         FRP_ARCH="mips"
         ;;
+    mips64) # 对应 mips64
+        FRP_ARCH="mips64"
+        ;;
+    mips64el) # 对应 mips64le
+        FRP_ARCH="mips64le"
+        ;;
+    mipsel) # 对应 mipsle
+        FRP_ARCH="mipsle"
+        ;;
+    riscv64) # 对应 riscv64
+        FRP_ARCH="riscv64"
+        ;;
     *)
         echo "不支持的系统架构: ${ARCH}"
-        echo "支持的架构有: x86_64 (amd64), aarch64 (arm64), armv7l (arm), loongarch64 (loong64), mips (mips)"
+        echo "支持的架构有: x86_64 (amd64), aarch64 (arm64), armv7l (arm), loongarch64 (loong64), mips (mips), mips64 (mips64), mips64el (mips64le), mipsel (mipsle), riscv64 (riscv64)"
         exit 1
         ;;esac
 
