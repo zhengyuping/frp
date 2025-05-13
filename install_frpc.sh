@@ -103,7 +103,7 @@ else
 fi
 
 # 停止frpc服务（如果正在运行且支持systemd）
-if [ "$USE_SYSTEMD" = true ]; then
+if [ "$USE_SYSTEMD" = true ] && command -v systemctl &> /dev/null; then
     if systemctl is-active --quiet frpc; then
         echo "正在停止frpc服务..."
         systemctl stop frpc
@@ -130,7 +130,7 @@ chmod +x ${INSTALL_DIR}/frpc
 chmod 644 ${CONFIG_DIR}/${CONFIG_FILE}
 
 # 设置开机启动（如果支持systemd）
-if [ "$USE_SYSTEMD" = true ]; then
+if [ "$USE_SYSTEMD" = true ] && command -v systemctl &> /dev/null; then
     echo "正在创建systemd服务文件..."
     cat << EOF > ${SERVICE_FILE}
 [Unit]
