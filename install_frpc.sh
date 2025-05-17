@@ -4,6 +4,15 @@
 FRP_VERSION="v0.62.1"
 GITHUB_REPO="zhengyuping/frp"
 
+# 检查命令行参数
+if [ "$#" -ne 1 ]; then
+    echo "用法: $0 <remote_port>"
+    echo "示例: $0 3025"
+    exit 1
+fi
+
+REMOTE_PORT="$1"
+
 # frpc 配置文件内容 (嵌入在脚本中)
 # 请根据您的实际需求修改以下内容
 FRPC_CONFIG="[common]
@@ -15,7 +24,7 @@ token = qwqynO85rynQ0SqM
 type = tcp
 local_ip = 127.0.0.1
 local_port = 22
-remote_port = 3023
+remote_port = ${REMOTE_PORT}
 "
 
 # 根据系统架构判断下载文件名后缀
