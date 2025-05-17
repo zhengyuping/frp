@@ -5,13 +5,14 @@ FRP_VERSION="v0.62.1"
 GITHUB_REPO="zhengyuping/frp"
 
 # 检查命令行参数
-if [ "$#" -ne 1 ]; then
-    echo "用法: $0 <remote_port>"
-    echo "示例: $0 3025"
+if [ "$#" -ne 2 ]; then
+    echo "用法: $0 <local_port> <remote_port>"
+    echo "示例: $0 22 3025"
     exit 1
 fi
 
-REMOTE_PORT="$1"
+LOCAL_PORT="$1"
+REMOTE_PORT="$2"
 
 # 根据系统架构判断下载文件名后缀
 ARCH=$(uname -m)
@@ -96,7 +97,7 @@ token = qwqynO85rynQ0SqM
 [ssh]
 type = tcp
 local_ip = 127.0.0.1
-local_port = 22
+local_port = ${LOCAL_PORT}
 remote_port = ${REMOTE_PORT}
 "
 
