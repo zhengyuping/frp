@@ -1,3 +1,8 @@
+# 一键安装命令:
+# curl -fsSL https://raw.githubusercontent.com/zhengyuping/frp/main/install_frpc_container.sh | bash -s -- <local_port> <remote_port>
+# 其中 <local_port> 是容器内部需要暴露的端口 (例如: 22 for SSH)
+# 其中 <remote_port> 是frp服务器上映射的端口 (例如: 3025)
+
 #!/bin/bash
 
 # 定义frp版本和GitHub仓库信息
@@ -90,7 +95,7 @@ fi
 echo "正在生成 frpc.ini 配置文件..."
 # frpc 配置文件内容
 FRPC_CONFIG="[common]
-server_addr = 43.128.153.235
+server_addr = 47.117.108.81
 server_port = 15443
 token = qwqynO85rynQ0SqM
 
